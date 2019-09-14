@@ -38,8 +38,8 @@ client.once('ready', () => {
 client.on('message', msg => {
 	//console.log(msg.content);
 
-	//var admin = msg.guild.roles.some(r => r.name == "admin");
-	admin = true;
+	var admin = msg.guild.roles.some(r => r.name == "admin");
+
 
 	if(admin === true)
 	{

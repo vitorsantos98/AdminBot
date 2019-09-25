@@ -56,11 +56,8 @@ client.on('message', msg => {
 		//show bot commands
 		msg.channel.send("!kickr @user <reason> - kick user from discord server with reason");
 		msg.channel.send("!ban @user <reason> - ban user from discord server with reason")
-
-		msg.channel.send("!add server1 <IP> - Add to the server1 a IP");
-		msg.channel.send("!add server1 <PORT> - Add to the server1 a PORT");
-		msg.channel.send("!add server2 <IP> - Add to the server2 a IP");
-		msg.channel.send("!add server2 <PORT> - Add to the server2 a PORT");
+		msg.channel.send("!add server1 <IP> <PORT> <RCONPASSWORD> - Add the server1");
+		msg.channel.send("!add server2 <IP> <PORT> <RCONPASSWORD> - Add the server2");
 		msg.channel.send("!qs 1 - Query server number 1");
 		msg.channel.send("!qs 2 - Query server number 2");
 		msg.channel.send("!srv1 kick <ID> - Kick player from server1");
@@ -70,209 +67,59 @@ client.on('message', msg => {
 		break;
 
 		}
-		case "!qs 1":
-		{
+    case "!q 1":
+    {
+      check_servers_added(msg);
+     break;
+   }
+    
+	case "!qs 1":
+	 {
 	
   		check_servers_added(msg);
   		break;
   					  		
-  		}
-  		 case "!qs 2":
+    }
+  case "!qs 2":
 		{
 	
   		check_servers_added(msg);
   		break;				  		
-  		}
-
   	}
+
+ 	}
 
   	var have_text_1 = msg.content.includes('!kickr ');
   	var have_text_2 = msg.content.includes('!banr');
-  	var have_text_3 = msg.content.includes('!add server1');
-  	var have_text_4 = msg.content.includes('!add server2');
+    var have_text_3 = msg.content.includes('!add server1');
+    var have_text_4 = msg.content.includes('!add server2');
   	var have_text_5 = msg.content.includes('!srv1 kick');
   	var have_text_6 = msg.content.includes('!srv1 banid');
   	var have_text_7 = msg.content.includes('!srv2 kick');
   	var have_text_8 = msg.content.includes('!srv2 banid');
   	
-  	
-  	if(have_text_1 === true || have_text_2 === true)
+  	  	
+    if(have_text_1)
   	{
   		
-  		
-  		//split message in user and reason
-		var text = "";
-
-			for (var i = 0; i < msg.content.length; i++) {
-				c = msg.content[i];
-
-				text += c;
-
-				if(text_cleaned == 2 && i == ( msg.content.length - 1))
-				{
-					var reason = text;
-					text = "";
-				}
-
-
-				if(text_cleaned == 1 && c == " ")
-				{
-					text_cleaned = 2;
-					var user = text;
-					text = "";
-				}
-
-
-				if(text == "!kickr ")
-				{
-					text_cleaned = 1;
-					text = "";
-				}
-
-				if(text == "!banr ")
-				{
-					text_cleaned = 1;
-					text = "";
-				}
-
-
-			}
-
-			var mb = msg.mentions.members.first();	
-			//console.log(mb);
-			
-			if(have_text_1 == true)
-			{
-			
-
-			mb.kick().then((mb) => {
-
-				msg.channel.send('User ' + mb.displayName + ' has been kick for ' + reason + '!');
-
-			});
-
-			}
-
-			if(have_text_2 == true)
-			{
+     kick_ban(msg);
 				
-				mb.ban().then((mb) => {
+	  }
 
-				msg.channel.send('User ' + mb.displayName + ' has been banned for ' + reason + '!');
-				
-			});
-			
-			
+    if(have_text_2)
+    {
+      kick_ban(msg);
+    }
 
-			}
 
-			
+
+  if(have_text_3 === true || have_text_4 === true)
+  {
+    console.log("Trg!");
+    check_servers_added(msg);
+  }
 		
-	}
-		
-
-
-  	if(have_text_3 == true || have_text_4 == true)
-  	{
-  		console.log("Add trig!");
-
-  		var text = "";
-  		var space = 0;
-
-  		for (var i = 0; i < msg.content.length; i++) {
-  			c = msg.content[i];
-  			
-  			if(c != " ")
-  			{
-  			text += c;
-  			}
-
-  			if(text_cleaned == 3 && i == ( msg.content.length - 1) )
-  			{
-  				var rconpassword = text;
-  				var text = "";
-  				
-
-  			}
-
-  			if(text_cleaned == 2 && c == " ")
-  			{
-  				var port = text;
-  				var text = "";
-  				var text_cleaned = 3
-  		
-  			}
-
-  			if(text_cleaned == 1 && c == " ")
-  			{
-  				ip = text;
-  				var text = "";
-  				var text_cleaned = 2
-  				
-  			}
-  			 		
-  		
-  			if(text == "!addserver1" && i == 12)
-  			{
-  				var text = "";
-
-  				var text_cleaned = 1;
-  				
-  			}
-
-  			if(text == "!addserver2" && i == 12)
-  			{
-  				var text = "";
-
-  				var text_cleaned = 1;
-  				
-  			}
-  			
-
-
-
-
-  		}
-
-  		let sql = 'SELECT ip FROM servers';
-
-  		db.all(sql, [], (err,rows) =>{
-
-  		if(rows.length == 0)
-  		{
-
-  			if(have_text_1 == true)
-  			{
-  			db.run('INSERT INTO servers(ip,port,rconpassword,server) VALUES("' + ip + '","' + port + '","' + rconpassword + '","1")');
-  			msg.channel.send("Server 1 have been set!");
-  			}
-  			else
-  			{
-  				db.run('INSERT INTO servers(ip,port,rconpassword,server) VALUES("' + ip + '","' + port + '","' + rconpassword + '","2")');
-  				msg.channel.send("Server 2 have been set!");
-  			}
-  		}
-  		else
-  		{
-  			if(have_text_1 == true)
-  			{
-  			db.run('UPDATE servers SET ip = "' + ip + '","port = ' + port + '",rconpassword = ' + rconpassword + ' WHERE server = 1');
-  			msg.channel.send("Server 1 have been updated!");
-  			}
-  			else
-  			{
-  				db.run('UPDATE servers SET ip = "' + ip + '",port = ' + port + ',rconpassword = ' + rconpassword + ' WHERE server = 2');
-  				msg.channel.send("Server 2 have been updated!");
-  			}
-  		}
-
-  		
-
-
-  		});
-  	}
-
-  	if(have_text_5 == true || have_text_6 == true || have_text_7 == true || have_text_8 == true)
+  	if(have_text_5 === true || have_text_6 === true || have_text_7 === true || have_text_8 === true)
   	{
   		
   		console.log("Srv trig!");
@@ -347,27 +194,35 @@ client.on('message', msg => {
 });
 
 
-
-
-	
-
 client.login(token);
 
 
 function check_servers_added(msg)
 {
-		//query table
+		
+    var have_text_1 = msg.content.includes("!add server1");
+
+    console.log(have_text_1);
+
+    //query table
 		let sql = 'SELECT server FROM servers';
 
 		//get all rows from table
 		 db.all(sql, [], (err, rows) => {
   		
-  			if(rows.length == 0)
+  		if(rows.length == 0 && have_text_1 != true)
 			{
 				msg.channel.send("No server set! Add a server first!");
 				
 			}
-			else
+
+      if(have_text_1 === true)
+      {
+        console.log("Record trigg!")
+        record_servers(msg);
+      }
+			
+      if(rows.length > 0)
 			{
 				for (var i = 0; i <= rows.length; i++) 
 				{
@@ -378,8 +233,15 @@ function check_servers_added(msg)
 
   						if(rows.length == 1)
   						{
-  							  						
-  							if(msg.content == "!qs 1" && sv == "1")
+  							  							
+                if(msg.content == "!q 1" && sv == "1")
+                {
+                  
+                  get_server(1,msg,"NULL","getstatus");
+                }
+
+               
+                if(msg.content == "!qs 1" && sv == "1")
   							{
   								get_server(1,msg,"NULL","NULL");
   							}
@@ -433,17 +295,24 @@ function get_server(sv,msg,id,type)
 
   		if(row_ip && row_port && row_rcon){
 
-  			if(row_sv == "1" && sv == 1 && type == "NULL")
+  			
+        if(row_sv == "1" && sv == 1 && type == "getstatus")
+        {
+          Rcontest.getStatus(row_ip,row_port,type,msg);
+          console.log("Command trig!");
+        }
+
+        if(row_sv == "1" && sv == 1 && type == "NULL")
   				{
-  					console.log("Kick trig4!");
+  				
   					//console.log(rows[i]);
-  					//Rcontest.sendRcon(row_ip ,row_port ,row_rcon , 'status');
+  					Rcontest.sendRcon(row_ip ,row_port ,row_rcon , 'status',msg);
   					break;
   				}
 
   			if(row_sv == "2" && sv == 2 && type == "NULL")
   				{
-  					console.log("Kick trig3!");
+  					
   					//console.log(rows[i]);
   					Rcontest.sendRcon(row_ip ,row_port ,row_rcon ,'status',msg);
   					break;
@@ -452,13 +321,13 @@ function get_server(sv,msg,id,type)
 
   			if(row_sv == "1" && sv == 1 && type == "kick")
   			{
-  				console.log("Kick trig2!");
+  				
   				Rcontest.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick' + id,msg);
   			}
 
   			if(row_sv == "1" && sv == 1 && type == "banid")
   			{
-  				console.log("Kick trig2!");
+  				
   				Rcontest.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick ' + id,msg);
   			}
 
@@ -479,5 +348,188 @@ function get_server(sv,msg,id,type)
 
   	
 }
+
+
+function record_servers(msg)
+{
+    var have_text_3 = msg.content.includes('!add server1');
+    var have_text_4 = msg.content.includes('!add server2');
+
+      if(have_text_3 === true || have_text_4 === true)
+      {
+            
+      var text = "";
+      var space = 0;
+
+      for (var i = 0; i < msg.content.length; i++) {
+        c = msg.content[i];
+        
+        if(c != " ")
+        {
+        text += c;
+        }
+
+        if(text_cleaned == 3 && i == ( msg.content.length - 1) )
+        {
+          var rconpassword = text;
+          var text = "";
+          
+
+        }
+
+        if(text_cleaned == 2 && c == " ")
+        {
+          var port = text;
+          var text = "";
+          var text_cleaned = 3
+      
+        }
+
+        if(text_cleaned == 1 && c == " ")
+        {
+          ip = text;
+          var text = "";
+          var text_cleaned = 2
+          
+        }
+            
+      
+        if(text == "!addserver1" && i == 12)
+        {
+          var text = "";
+
+          var text_cleaned = 1;
+          
+        }
+
+        if(text == "!addserver2" && i == 12)
+        {
+          var text = "";
+
+          var text_cleaned = 1;
+          
+        }
+    
+      }
+
+    }
+
+
+      let sql = 'SELECT ip FROM servers';
+
+      db.all(sql, [], (err,rows) =>{
+
+      if(rows.length == 0)
+      {
+        console.log("Theres no rows!");
+
+        if(have_text_3 === true)
+        {
+        db.run('INSERT INTO servers(ip,port,rconpassword,server) VALUES("' + ip + '","' + port + '","' + rconpassword + '","1")');
+        msg.channel.send("Server 1 have been set!");
+        }
+        else
+        {
+          db.run('INSERT INTO servers(ip,port,rconpassword,server) VALUES("' + ip + '","' + port + '","' + rconpassword + '","2")');
+          msg.channel.send("Server 2 have been set!");
+        }
+      }
+      else
+      {
+        console.log("Theres one row!");
+        
+        if(have_text_3 === true)
+        {
+        db.run('UPDATE servers SET ip = "' + ip + '",port = ' + port + ',rconpassword = ' + rconpassword + ' WHERE server = 1');
+        msg.channel.send("Server 1 have been updated!");
+        }
+        else
+        {
+          db.run('UPDATE servers SET ip = "' + ip + '",port = ' + port + ',rconpassword = ' + rconpassword + ' WHERE server = 2');
+          msg.channel.send("Server 2 have been updated!");
+        }
+
+      }
+
+      
+
+
+      });
+    
+
+    }
+
+
+    function kick_ban(msg)
+    {
+        console.log("1 or 2 trig!");
+      //split message in user and reason
+    var text = "";
+
+      for (var i = 0; i < msg.content.length; i++) {
+        c = msg.content[i];
+
+        text += c;
+
+        if(text_cleaned == 2 && i == ( msg.content.length - 1))
+        {
+          var reason = text;
+          text = "";
+        }
+
+
+        if(text_cleaned == 1 && c == " ")
+        {
+          text_cleaned = 2;
+          var user = text;
+          text = "";
+        }
+
+
+        if(text == "!kickr ")
+        {
+          text_cleaned = 1;
+          text = "";
+        }
+
+        if(text == "!banr ")
+        {
+          text_cleaned = 1;
+          text = "";
+        }
+
+
+      }
+
+      var mb = msg.mentions.members.first();  
+      //console.log(mb);
+      
+      if(have_text_1 == true)
+      {
+      
+
+      mb.kick().then((mb) => {
+
+        msg.channel.send('User ' + mb.displayName + ' has been kick for ' + reason + '!');
+
+      });
+
+      }
+
+      if(have_text_2 == true)
+      {
+        
+        mb.ban().then((mb) => {
+
+        msg.channel.send('User ' + mb.displayName + ' has been banned for ' + reason + '!');
+        
+      });
+      
+      
+
+      }
+    }
+
+
 
 

@@ -22,9 +22,37 @@ module.exports = {
       //console.log("received: ",message.toString('utf8').substring(4),rinfo);
       //return message.toString('utf8').substring(4);
 
+      msg.channel.send(message.toString('utf8').substring(4));
+
+    });
+
+},
+
+ getStatus: function(ip,port,command,msg) {
+    var client = dgram.createSocket('udp4');
+   var sendMessage =  Buffer.from(_buffer + command,"binary");
+
+    client.send(sendMessage, 0, sendMessage.length, port, ip, function(err, bytes) {
+      if (err) return err;
+        console.log('UDP message sent to ' + ip +':'+ port);
+    });
+
+    client.on('error', function(e) {
+      console.log(e);
+      return e;
+    });
+
+    client.on("message", function(message, rinfo) {
+      //console.log("received: ",message.toString('utf8').substring(4),rinfo);
+      //return message.toString('utf8').substring(4);
+
       msg.channel.send(message.toString('utf8').substring(4),rinfo);
 
     });
 
 }
+
+
 }
+
+

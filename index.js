@@ -4,7 +4,7 @@ const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const Rcontest = require('./RCON');
 const sqlite3 = require('sqlite3').verbose();
-
+const jsonrpc = require('request');
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 const client = new Discord.Client();
@@ -54,7 +54,8 @@ client.on('message', msg => {
 		case "!bot help":
 		{
 		//show bot commands
-		msg.channel.send("!kickr @user <reason> - kick user from discord server with reason");
+		/*
+    msg.channel.send("!kickr @user <reason> - kick user from discord server with reason");
 		msg.channel.send("!ban @user <reason> - ban user from discord server with reason")
 		msg.channel.send("!add server1 <IP> <PORT> <RCONPASSWORD> - Add the server1");
 		msg.channel.send("!add server2 <IP> <PORT> <RCONPASSWORD> - Add the server2");
@@ -64,6 +65,21 @@ client.on('message', msg => {
 		msg.channel.send("!srv1 ban <ID> - Ban player from server1");
 		msg.channel.send("!srv2 kick <ID> - Kick player from server2");
 		msg.channel.send("!srv2 ban <ID> - Ban player from server2");
+*/
+    const helpembed = new Discord.RichEmbed()
+    .setTitle('Help commands')
+    .addField('!kickr @user <reason>', 'kick user from discord server with reason')
+    .addField('!ban @user <reason>', 'ban user from discord server with reason')
+    .addField('!add server1 <IP> <PORT> <RCONPASSWORD>','Add the server1')
+    .addField('!add server2 <IP> <PORT> <RCONPASSWORD>','Add the server2')
+    .addField('!qs 1', 'Query server number 1')
+    .addField('!qs 2', 'Query server number 2')
+    .addField('!srv1 kick <ID>', 'Kick player from server1')
+    .addField('!srv1 ban <ID>', 'Ban player from server1')
+    .addField('!srv2 kick <ID>', 'Kick player from server2')
+    .addField('!srv2 ban <ID>', 'Ban player from server2');
+    
+    msg.channel.send(helpembed);
 		break;
 
 		}
@@ -86,6 +102,9 @@ client.on('message', msg => {
   		check_servers_added(msg);
   		break;				  		
   	}
+case "news":
+    show_news();
+    break;
 
  	}
 
@@ -115,15 +134,13 @@ client.on('message', msg => {
 
   if(have_text_3 === true || have_text_4 === true)
   {
-    console.log("Trg!");
-    check_servers_added(msg);
+       check_servers_added(msg);
   }
 		
   	if(have_text_5 === true || have_text_6 === true || have_text_7 === true || have_text_8 === true)
   	{
   		
-  		console.log("Srv trig!");
-  		var text = "";
+    		var text = "";
 
   		for (var i = 0; i < msg.content.length; i++) {
   			
@@ -218,8 +235,7 @@ function check_servers_added(msg)
 
       if(have_text_1 === true)
       {
-        console.log("Record trigg!")
-        record_servers(msg);
+             record_servers(msg);
       }
 			
       if(rows.length > 0)
@@ -299,7 +315,7 @@ function get_server(sv,msg,id,type)
         if(row_sv == "1" && sv == 1 && type == "getstatus")
         {
           Rcontest.getStatus(row_ip,row_port,type,msg);
-          console.log("Command trig!");
+          
         }
 
         if(row_sv == "1" && sv == 1 && type == "NULL")

@@ -2,7 +2,7 @@ const express = require('express');
 const pug = require('pug');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
-const Rcontest = require('./RCON');
+const Rcon = require('./RCON');
 const sqlite3 = require('sqlite3').verbose();
 const jsonrpc = require('request');
 const Discord = require('discord.js');
@@ -102,9 +102,7 @@ client.on('message', msg => {
   		check_servers_added(msg);
   		break;				  		
   	}
-case "news":
-    show_news();
-    break;
+
 
  	}
 
@@ -314,7 +312,7 @@ function get_server(sv,msg,id,type)
   			
         if(row_sv == "1" && sv == 1 && type == "getstatus")
         {
-          Rcontest.getStatus(row_ip,row_port,type,msg);
+          Rcon.getStatus(row_ip,row_port,type,msg);
           
         }
 
@@ -322,7 +320,7 @@ function get_server(sv,msg,id,type)
   				{
   				
   					//console.log(rows[i]);
-  					Rcontest.sendRcon(row_ip ,row_port ,row_rcon , 'status',msg);
+  					Rcon.sendRcon(row_ip ,row_port ,row_rcon , 'status',msg);
   					break;
   				}
 
@@ -330,7 +328,7 @@ function get_server(sv,msg,id,type)
   				{
   					
   					//console.log(rows[i]);
-  					Rcontest.sendRcon(row_ip ,row_port ,row_rcon ,'status',msg);
+  					Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'status',msg);
   					break;
   				}
 
@@ -338,24 +336,24 @@ function get_server(sv,msg,id,type)
   			if(row_sv == "1" && sv == 1 && type == "kick")
   			{
   				
-  				Rcontest.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick' + id,msg);
+  				Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick' + id,msg);
   			}
 
   			if(row_sv == "1" && sv == 1 && type == "banid")
   			{
   				
-  				Rcontest.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick ' + id,msg);
+  				Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick ' + id,msg);
   			}
 
 			if(row_sv == "2" && sv == 2 && type == "kick")
   			{
-  				Rcontest.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick ' + id,msg);
+  				Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick ' + id,msg);
   			}
   			
 
   			if(row_sv == "2" && sv == 2 && type == "banid")
   			{
-  				Rcontest.sendRcon(row_ip ,row_port ,row_rcon ,'banid ' + id,msg);
+  				Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'banid ' + id,msg);
   			}
 
   			}

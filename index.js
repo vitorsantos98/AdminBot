@@ -49,10 +49,9 @@ client.on('message', msg => {
 	switch(msg.content)
 	{
 
-		
-		
+				
 		case "!bot help":
-		{
+		
 		//show bot commands
 		/*
     msg.channel.send("!kickr @user <reason> - kick user from discord server with reason");
@@ -72,136 +71,37 @@ client.on('message', msg => {
     .addField('!ban @user <reason>', 'ban user from discord server with reason')
     .addField('!add server1 <IP> <PORT> <RCONPASSWORD>','Add the server1')
     .addField('!add server2 <IP> <PORT> <RCONPASSWORD>','Add the server2')
-    .addField('!qs 1', 'Query server number 1')
-    .addField('!qs 2', 'Query server number 2')
-    .addField('!srv1 kick <ID>', 'Kick player from server1')
     .addField('!srv1 ban <ID>', 'Ban player from server1')
-    .addField('!srv2 kick <ID>', 'Kick player from server2')
+    .addField('!srv1 <command/variable> <optional>','Send command to server')
+    .addField('!srv2 <command/variable> <optional>','Send command to server')
     .addField('!srv2 ban <ID>', 'Ban player from server2');
+
     
     msg.channel.send(helpembed);
 		break;
-
-		}
-    case "!q 1":
-    {
-      check_servers_added(msg);
-     break;
-   }
-    
-	case "!qs 1":
-	 {
-	
-  		check_servers_added(msg);
-  		break;
-  					  		
-    }
-  case "!qs 2":
-		{
-	
-  		check_servers_added(msg);
-  		break;				  		
-  	}
-
-
+ 	
  	}
 
-  	var have_text_1 = msg.content.includes('!kickr ');
-  	var have_text_2 = msg.content.includes('!banr');
-    var have_text_3 = msg.content.includes('!add server1');
-    var have_text_4 = msg.content.includes('!add server2');
-  	var have_text_5 = msg.content.includes('!srv1 kick');
-  	var have_text_6 = msg.content.includes('!srv1 banid');
-  	var have_text_7 = msg.content.includes('!srv2 kick');
-  	var have_text_8 = msg.content.includes('!srv2 banid');
-  	
-  	  	
-    if(have_text_1)
-  	{
-  		
-     kick_ban(msg);
-				
-	  }
+    let command_args = msg.content.split(" ");
+    let id = command_args[2];
 
-    if(have_text_2)
+  	 console.log("C: " + command_args[0]);	  	
+    switch(command_args[0])
     {
-      kick_ban(msg);
+      case "!kickr":
+      case "!banr":
+                    kick_ban(msg);
+                    console.log("Admin!");
+                    break;
+      case "!add":                        
+      case "!srv1":                  
+      case "!srv2":
+                    console.log("Server!");
+                    check_servers_added(msg,command_args);
+                    break
+
     }
 
-
-
-  if(have_text_3 === true || have_text_4 === true)
-  {
-       check_servers_added(msg);
-  }
-		
-  	if(have_text_5 === true || have_text_6 === true || have_text_7 === true || have_text_8 === true)
-  	{
-  		
-    		var text = "";
-
-  		for (var i = 0; i < msg.content.length; i++) {
-  			
-  			c = msg.content[i];
-
-  			text += c;
-
-  			if(text_cleaned == 1 && i == ( msg.content.length - 1))
-  			{
-  				var id = text;
-  			}
-
-  			if(text == "!srv1 kick ")
-  			{
-  				var text = "";
-  				var text_cleaned = 1;
-  				var sv = 1;
-  			}
-
-  			if(text == "!srv1 banid ")
-  			{
-  				var text = "";
-  				var text_cleaned = 1;
-  				var sv = 2;
-  			}
-
-  			if(text == "!srv2 kick ")
-  			{
-  				var text = "";
-  				var text_cleaned = 1;
-  				var sv = 3;
-  			}
-
-  			if(text == "!srv2 banid ")
-  			{
-  				var text = "";
-  				var text_cleaned = 1;
-  				var sv = 4;
-  			}
-
-  		}
-
-  		switch(sv)
-  		{
-  			case 1:
-  			get_server(1,msg,id,"kick");
- 			break;
-  			case 2:
-  			get_server(1,msg,id,"banid");
-  			break;
-
-  			case 3:
-  			get_server(2,msg,id,"kick");
-  			break;
-  			case 4:
-  			get_server(2,msg,id,"banid");
-  			break;
-  			
-  		}
-
-
-
-  	}
 
 
 }
@@ -209,15 +109,12 @@ client.on('message', msg => {
 });
 
 
-client.login(token);
-
-
-function check_servers_added(msg)
+function check_servers_added(msg,command_args)
 {
 		
-    var have_text_1 = msg.content.includes("!add server1");
+    //var have_text_1 = msg.content.includes("!add server1");
 
-    console.log(have_text_1);
+    console.log("Check servers trig!");
 
     //query table
 		let sql = 'SELECT server FROM servers';
@@ -225,13 +122,13 @@ function check_servers_added(msg)
 		//get all rows from table
 		 db.all(sql, [], (err, rows) => {
   		
-  		if(rows.length == 0 && have_text_1 != true)
+  		if(rows.length == 0 && command_args[0] != "!add")
 			{
 				msg.channel.send("No server set! Add a server first!");
 				
 			}
 
-      if(have_text_1 === true)
+      if(command_args[0] == "!add" && command_args[1] == "server1")
       {
              record_servers(msg);
       }
@@ -245,52 +142,27 @@ function check_servers_added(msg)
   					if(row){
   						var sv = row.server;
 
-  						if(rows.length == 1)
-  						{
-  							  							
-                if(msg.content == "!q 1" && sv == "1")
-                {
-                  
-                  get_server(1,msg,"NULL","getstatus");
-                }
-
-               
-                if(msg.content == "!qs 1" && sv == "1")
-  							{
-  								get_server(1,msg,"NULL","NULL");
-  							}
-
-  							if(msg.content == "!qs 2" && sv == "2")
-  							{
-  								get_server(2,msg,"NULL","NULL");
-  							}
-
-  							if(msg.content == "!qs 1" && sv == "2")
-  							{
-  								msg.channel.send("Server 1 not set!");
-  							}
-  							
-  							if(msg.content == "!qs 2" && sv == "1")
-  							{
-  								msg.channel.send("Server 2 not set!");
-  							}
-							
-
-  						}
+  						switch(command_args[0])
+              {
+                case "!srv1":
+                              get_server(1,msg,command_args);
+                              break;
+                case "!srv2":
+                              get_server(2,msg,command_args);
+                              break
+              }
+ 						
 
   					}
   				}
 			}
 
   		});
-
-
-		
 		
 }
 
 
-function get_server(sv,msg,id,type)
+function get_server(sv,msg,cmd)
 {
 		//query table
   	let sql = 'SELECT ip,port,rconpassword,server FROM servers';
@@ -310,51 +182,53 @@ function get_server(sv,msg,id,type)
   		if(row_ip && row_port && row_rcon){
 
   			
-        if(row_sv == "1" && sv == 1 && type == "getstatus")
-        {
-          Rcon.getStatus(row_ip,row_port,type,msg);
-          
-        }
-
-        if(row_sv == "1" && sv == 1 && type == "NULL")
+      
+        if(row_sv == "1" && sv == 1 && cmd[1] != "ban")
   				{
   				
   					//console.log(rows[i]);
-  					Rcon.sendRcon(row_ip ,row_port ,row_rcon , 'status',msg);
-  					break;
+  					if(cmd[2] == undefined)
+            {
+
+            Rcon.sendRcon(row_ip ,row_port ,row_rcon , cmd[1] + "  ",msg);
+            }
+            else{
+
+            Rcon.sendRcon(row_ip ,row_port ,row_rcon , cmd[1] + " " + cmd[2],msg);
+  					 
+             }
+            break;
   				}
 
-  			if(row_sv == "2" && sv == 2 && type == "NULL")
+  			if(row_sv == "2" && sv == 2 && cmd[1] != "ban")
   				{
   					
   					//console.log(rows[i]);
-  					Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'status',msg);
+  				  if(cmd[2] == undefined)
+            {
+
+            Rcon.sendRcon(row_ip ,row_port ,row_rcon , cmd[1] + "  ",msg);
+            }
+            else{
+
+            Rcon.sendRcon(row_ip ,row_port ,row_rcon , cmd[1] + " " + cmd[2],msg);
+             
+             }
   					break;
   				}
 
-
-  			if(row_sv == "1" && sv == 1 && type == "kick")
+  		
+  			if(row_sv == "1" && sv == 1 && cmd[1] == "ban")
   			{
   				
-  				Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick' + id,msg);
+  				Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'banid ' + cmd[2],msg);
   			}
 
-  			if(row_sv == "1" && sv == 1 && type == "banid")
+			if(row_sv == "2" && sv == 2 && cmd[1] == "ban")
   			{
-  				
-  				Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick ' + id,msg);
-  			}
-
-			if(row_sv == "2" && sv == 2 && type == "kick")
-  			{
-  				Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'clientkick ' + id,msg);
+  				Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'banid ' + cmd[2],msg);
   			}
   			
-
-  			if(row_sv == "2" && sv == 2 && type == "banid")
-  			{
-  				Rcon.sendRcon(row_ip ,row_port ,row_rcon ,'banid ' + id,msg);
-  			}
 
   			}
   		}
@@ -366,68 +240,13 @@ function get_server(sv,msg,id,type)
 
 function record_servers(msg)
 {
-    var have_text_3 = msg.content.includes('!add server1');
-    var have_text_4 = msg.content.includes('!add server2');
+    //var have_text_3 = msg.content.includes('!add server1');
+    //var have_text_4 = msg.content.includes('!add server2');
 
-      if(have_text_3 === true || have_text_4 === true)
-      {
-            
-      var text = "";
-      var space = 0;
-
-      for (var i = 0; i < msg.content.length; i++) {
-        c = msg.content[i];
-        
-        if(c != " ")
-        {
-        text += c;
-        }
-
-        if(text_cleaned == 3 && i == ( msg.content.length - 1) )
-        {
-          var rconpassword = text;
-          var text = "";
-          
-
-        }
-
-        if(text_cleaned == 2 && c == " ")
-        {
-          var port = text;
-          var text = "";
-          var text_cleaned = 3
-      
-        }
-
-        if(text_cleaned == 1 && c == " ")
-        {
-          ip = text;
-          var text = "";
-          var text_cleaned = 2
-          
-        }
-            
-      
-        if(text == "!addserver1" && i == 12)
-        {
-          var text = "";
-
-          var text_cleaned = 1;
-          
-        }
-
-        if(text == "!addserver2" && i == 12)
-        {
-          var text = "";
-
-          var text_cleaned = 1;
-          
-        }
-    
-      }
-
-    }
-
+    let command_args = msg.content.split(" ");
+    let ip = command_args[2];
+    let port = command_args[3];
+    let rconpassword = command_args[4];
 
       let sql = 'SELECT ip FROM servers';
 
@@ -437,7 +256,7 @@ function record_servers(msg)
       {
         console.log("Theres no rows!");
 
-        if(have_text_3 === true)
+        if(command_args[0] == "!add" && command_args[1] == "server1")
         {
         db.run('INSERT INTO servers(ip,port,rconpassword,server) VALUES("' + ip + '","' + port + '","' + rconpassword + '","1")');
         msg.channel.send("Server 1 have been set!");
@@ -452,7 +271,7 @@ function record_servers(msg)
       {
         console.log("Theres one row!");
         
-        if(have_text_3 === true)
+        if(command_args[0] == "!add" && command_args[1] == "server1")
         {
         db.run('UPDATE servers SET ip = "' + ip + '",port = ' + port + ',rconpassword = ' + rconpassword + ' WHERE server = 1');
         msg.channel.send("Server 1 have been updated!");
@@ -473,77 +292,34 @@ function record_servers(msg)
 
     }
 
-
     function kick_ban(msg)
     {
-        console.log("1 or 2 trig!");
-      //split message in user and reason
-    var text = "";
-
-      for (var i = 0; i < msg.content.length; i++) {
-        c = msg.content[i];
-
-        text += c;
-
-        if(text_cleaned == 2 && i == ( msg.content.length - 1))
-        {
-          var reason = text;
-          text = "";
-        }
-
-
-        if(text_cleaned == 1 && c == " ")
-        {
-          text_cleaned = 2;
-          var user = text;
-          text = "";
-        }
-
-
-        if(text == "!kickr ")
-        {
-          text_cleaned = 1;
-          text = "";
-        }
-
-        if(text == "!banr ")
-        {
-          text_cleaned = 1;
-          text = "";
-        }
-
-
-      }
-
-      var mb = msg.mentions.members.first();  
-      //console.log(mb);
       
-      if(have_text_1 == true)
+     let command_args = msg.content.split(" ");
+
+     let mb = msg.mentions.members.first();  
+      
+      if(command_args[0] == "!kickr")
       {
-      
 
-      mb.kick().then((mb) => {
+        mb.kick().then((mb) => {
+          
+          msg.channel.send('User ' + mb.displayName + ' has been kick for ' + command_args[2] + '!');
 
-        msg.channel.send('User ' + mb.displayName + ' has been kick for ' + reason + '!');
-
-      });
+        });
 
       }
 
-      if(have_text_2 == true)
+      if(command_args[0] == "!banr")
       {
-        
-        mb.ban().then((mb) => {
+          mb.ban().then((mb) => {
 
-        msg.channel.send('User ' + mb.displayName + ' has been banned for ' + reason + '!');
+        msg.channel.send('User ' + mb.displayName + ' has been banned for ' + command_args[2] + '!');
         
-      });
+        });
       
-      
-
       }
+    
     }
 
-
-
-
+client.login(token);

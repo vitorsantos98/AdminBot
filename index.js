@@ -38,33 +38,43 @@ client.once('ready', () => {
 client.on('message', msg => {
 	//console.log(msg.content);
 
-	var admin = msg.guild.roles.some(r => r.name == "admin");
+is_admin = 0;
 
+	var admin = msg.member.roles.cache.array();
 
-	if(admin === true)
+  for (var i = 0; i < admin.length; i++) {
+    var r = admin[i].permissions;
+
+    try{
+
+    if(r.has({ haspermission: 'Administrator', haspermission: 'KICK_MEMBERS',haspermission: 'BAN_MEMBERS'}))
+    {
+      is_admin = 1;
+    }
+
+    }
+    catch(error)
+    {
+
+    }
+   
+  }
+
+//console.log(admin);
+
+//var admin = msg.member.roles.cache.find(r => r.name === "admin");
+
+	if(is_admin == 1)
 	{
 	
-	
+	console.log("Is admin!")
 	//help command for the commands of the bot
 	switch(msg.content)
 	{
 
 				
 		case "!bot help":
-		
-		//show bot commands
-		/*
-    msg.channel.send("!kickr @user <reason> - kick user from discord server with reason");
-		msg.channel.send("!ban @user <reason> - ban user from discord server with reason")
-		msg.channel.send("!add server1 <IP> <PORT> <RCONPASSWORD> - Add the server1");
-		msg.channel.send("!add server2 <IP> <PORT> <RCONPASSWORD> - Add the server2");
-		msg.channel.send("!qs 1 - Query server number 1");
-		msg.channel.send("!qs 2 - Query server number 2");
-		msg.channel.send("!srv1 kick <ID> - Kick player from server1");
-		msg.channel.send("!srv1 ban <ID> - Ban player from server1");
-		msg.channel.send("!srv2 kick <ID> - Kick player from server2");
-		msg.channel.send("!srv2 ban <ID> - Ban player from server2");
-*/
+
     const helpembed = new Discord.RichEmbed()
     .setTitle('Help commands')
     .addField('!kickr @user <reason>', 'kick user from discord server with reason')
@@ -84,8 +94,7 @@ client.on('message', msg => {
 
     let command_args = msg.content.split(" ");
     let id = command_args[2];
-
-  	 console.log("C: " + command_args[0]);	  	
+	  	
     switch(command_args[0])
     {
       case "!kickr":
@@ -102,20 +111,16 @@ client.on('message', msg => {
 
     }
 
-
-
 }
 
 });
 
 
+
 function check_servers_added(msg,command_args)
 {
-		
-    //var have_text_1 = msg.content.includes("!add server1");
-
-    console.log("Check servers trig!");
-
+   //var have_text_1 = msg.content.includes("!add server1");
+  
     //query table
 		let sql = 'SELECT server FROM servers';
 
